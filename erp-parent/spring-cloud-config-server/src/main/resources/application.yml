@@ -1,0 +1,16 @@
+server.port: 1000
+#配置 配置中心服务器
+spring:
+  application:
+    name: spring-cloud-config-server
+  cloud:
+    config:
+      server:
+        git: #配置git的仓库位置
+          uri:  https://github.com/sunluquan/spring-cloud-erp.git
+          username: sunluquan
+          password: sunluquan1213
+          #配置分支在config下
+          default-label: config
+           #文件的根目录
+          search-paths: configs

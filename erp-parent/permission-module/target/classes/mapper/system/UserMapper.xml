@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.slq.mapper.UserMapper">
+
+	<select id="checkuid" resultType="int">
+		select count(0) from sys_user where uid=#{uid}
+	</select>
+	<!-- 修改当前用户 -->
+	<update id="updateActiveUser">
+		update sys_user set
+		uName=#{uname},address=#{address},sex=#{sex},
+		signature=#{signature},initial=#{initial}
+		where id=#{id}
+	</update>
+<!-- 修改密码 -->
+	<update id="updatePwd">
+		update sys_user set uPwd=#{encryptionPwd} where id=#{id}
+	</update>
+<!-- 修改头像 -->
+	<update id="setHeadPortrai" >
+		update sys_user set imgpath=#{newName} where id=#{userId}
+	</update>
+	<select id="getUserList" resultType="User">
+		select `id`,`uId`,`uName`,`imgpath`,`address`,`sex`,
+		`signature`,`isadmin`,`deptid`,`mgr`,
+		`isFixed`,createTime,
+		`userStatus` from sys_user
+		<where>
+			<if test="keyWord!=null and keyWord!=''">
+				uName like concat('%',#{keyWord},'%')
+				or initial like concat('%',#{keyWord},'%')
+			</if>
+			and id != #{replenishParams.id}
+		</where>
+		order by 
+		<choose>
+			<when test="orderingRule.prop!=null and orderingRule.prop!='' and orderingRule.order!=null and orderingRule.order!=''">
+				${orderingRule.prop}  ${orderingRule.order}
+			</when>
+			<otherwise >
+				createTime asc
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="getUsers" resultType="User">
+		SELECT
+		`id`,
+		`uId`,
+		`uName`,
+		`imgpath`,
+		`address`,
+		`sex`,
+		`signature`,
+		`isadmin`,
+		`deptid`,
+		`mgr`,
+		`initial`,
+		`isFixed`,
+		`userStatus`
+		FROM
+		`project`.`sys_user`
+	</select>
+
+	<select id="getUsreByuId" resultType="User">
+		select * from sys_user
+		where uId=#{uId}
+	</select>
+	<insert id="insertUser" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO
+		sys_user(`id`,`uId`,`uName`,`uPwd`,`imgpath`,`address`,`sex`,
+		`signature`,`isadmin`,`deptid`,`mgr`,`initial`,
+		`isFixed`,
+		`userStatus`)
+		values
+		(default,#{uid},#{uname},#{upwd},#{imgPath},#{address},
+		#{sex},#{signature},#{isadmin},
+		default,default,#{initial},default,default
+		);
+	</insert>
+
+	<select id="getUserByuId" resultType="User">
+		select
+		`id`,`uId`,`uName`,`uPwd`,`imgpath`,`address`,`sex`,
+		`signature`,`isadmin`,`deptid`,`mgr`,`initial`,
+		`isFixed`,
+		`userStatus`
+		from sys_user
+		where uId=#{uId}
+	</select>
+	<update id="updateUser">
+		update sys_user set
+		isadmin=#{isadmin},isFixed=#{isFixed},userStatus=#{userStatus}
+		where id=#{id}
+	</update>
+	<!-- getuserOwnRole:获取用户的权限 -->
+	<select id="getuserOwnRole" resultType="int">
+		select role_id from user_role
+		where user_id =#{id}
+	</select>
+	
+	<delete id="delete_userRole" >
+		delete from user_role where user_id=#{id}
+	</delete>
+	<insert id="setUserOwnRole">
+		insert into user_role(user_id,role_id)
+		values
+		<foreach collection="newRids" separator="," item="rid">
+			(#{id},#{rid})
+		</foreach>
+	</insert>
+</mapper>

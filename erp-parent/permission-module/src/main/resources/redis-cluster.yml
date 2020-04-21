@@ -1,0 +1,37 @@
+server.port: 8011
+
+spring:
+  cache:
+    config: classpath:ehcache.xml
+  redis:
+    timeout: 6000ms
+    password: 
+    lettuce:
+      pool:
+        max-active: 1000  #连接池最大连接数（使用负值表示没有限制）
+        max-idle: 10 # 连接池中的最大空闲连接
+        min-idle: 5 # 连接池中的最小空闲连接
+        max-wait: -1 # 连接池最大阻塞等待时间（使用负值表示没有限制）
+    cluster: #redis集群
+      nodes: 
+        - 192.168.18.136:30001
+        - 192.168.18.136:30002
+        - 192.168.18.136:30003
+        - 192.168.18.136:30004
+        - 192.168.18.136:30005
+        - 192.168.18.136:30006
+      maxRedirects: 3 # 错误连接之后的最大重连次数
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/project?serverTimezone = GMT&allowMultiQueries=true
+    username: root
+    password: 
+    initialSize: 3
+    minIdle: 3
+    maxActive: 30
+    maxWait: 15000
+mybatis-plus:
+  configLocation: #mybatis配置文件的路径
+  mapperLocations: classpath:mapper/**/*.xml #mybatis的资源.xml文件路径
+  typeAliasesPackage: com.slq.pojo #配置包下的别名
+
+    

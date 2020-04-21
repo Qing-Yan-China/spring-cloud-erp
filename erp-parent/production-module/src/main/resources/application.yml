@@ -1,0 +1,37 @@
+server.port: 8011
+  
+spring:
+  cache:
+    config: classpath:ehcache.xml
+  redis:
+    datasource: 0
+    host: 192.168.18.136
+    port: 6379
+    jedis:
+      pool:
+        max-active: 8
+        max-wait: -1 
+        max-idle: 8 
+        min-idle: 0  
+        timeout: 0 
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/production_module?serverTimezone = GMT&allowMultiQueries=true
+    username: root
+    password: 
+    minIdle: 3
+    maxActive: 30
+    maxWait: 15000
+mybatis-plus:
+  configLocation: #mybatis配置文件的路径
+  mapperLocations: classpath:mapper/**/*.xml #mybatis的资源.xml文件路径
+  typeAliasesPackage: com.slq.pojo,com.slq.pojo.production #配置包下的别名
+  global-config:
+    db-config:
+      idType: AUTO #主键策略 
+  configuration:
+    mapUnderscoreToCamelCase: false #关闭字段名的映射（关闭如userName映射成user_name）
+logging:
+  level:
+    com.slq.mapper: debug
+    org.springframework.web: DEBUG
+    org.apache.ibatis.*: debug

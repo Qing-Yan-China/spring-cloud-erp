@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.slq.mapper.CommonMapper">
+	<!-- 可用的permission -->
+	<sql id="permission_up_state">
+		permissionStatus=1
+	</sql>
+	<sql id="1">
+		pName,pType,pId
+	</sql>
+	<sql id="2">
+		`pId`,`pName`,`pType`,`icon`,`url`,`parentId`,`showMenu`,`componentName`
+	</sql>
+	<!-- 过滤菜单需要的数据 -->
+	<select id="getTreeMenuIds" resultType="int">
+		select `pId`
+		from sys_permission where pType=2 and `permissionStatus`=1
+		 and  pId in
+		(select permission_id from role_permission where role_id in
+			(select rId from sys_role where `roleStatus`=1 and rId in 
+				(select role_Id from user_role where user_id=#{id})
+			)
+		)
+	</select>
+	<!--  -->
+	<!-- 树状菜单的获取 也是超级管理员获取-->
+	<resultMap type="TreeMenu" id="treeMenuResult" autoMapping="true">
+		<id column="pId" property="id"/>
+		<result column="pName" property="title"/>
+		<result column="pType" property="type"/>
+		<result column="url" property="url"/>
+		<result column="showMenu" property="showMenu"/>
+		<result column="componentName" property="componentName"/>
+		<collection property="children" ofType="TreeMenu" autoMapping="true" select="getTreeMenuChild" column="pId">
+			<id column="pId" property="id"/>
+			<result column="pName" property="title"/>
+			<result column="pType" property="type"/>
+			<result column="url" property="url"/>
+			<result column="showMenu" property="showMenu"/>
+		<result column="componentName" property="componentName"/>
+		</collection>
+	</resultMap>
+	<select id="getTreeMenu" resultMap="treeMenuResult">
+		select 
+		<choose>
+			<when test="type!=null and type!='' and type==1">
+				<include refid="1"></include>
+			</when>
+			<when test="type!=null and type!='' and type==2">
+				<include refid="2"></include>
+			</when>
+			<otherwise>
+				`pId`,`pName`,`pType`,`icon`,`url`,`parentId`,`showMenu`,`componentName`
+			</otherwise>
+		</choose>
+		from sys_permission
+		where <include refid="permission_up_state" /> 
+		<if test="type!=null and type!=''">
+			and pType=#{type}
+		</if>
+		and parentId is null or parentId =''
+		
+		order by sort asc
+	</select>
+	<select id="getTreeMenuChild" resultMap="treeMenuResult">
+		select 
+		 `pId`,`pName`,`pType`,`icon`,`url`,`parentId`,`showMenu`,`componentName`
+		 from sys_permission
+		where <include refid="permission_up_state" /> 
+		and  parentId =#{pId}
+		order by sort asc
+	</select>
+	<!--  -->
+	
+	<select id="getDescSort" resultType="int">
+		select ${columnName} from ${tableName} 
+		order by ${columnName} desc limit 1
+	</select>
+</mapper>

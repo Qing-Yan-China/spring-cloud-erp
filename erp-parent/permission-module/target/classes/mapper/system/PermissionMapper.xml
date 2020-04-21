@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.slq.mapper.PermissionMapper">
+	<!-- 用户拥有的权限 -->
+	<select id="getUserOwnPermission" resultType="java.lang.String">
+		SELECT resource FROM sys_permission
+		WHERE permissionStatus=1 AND pType=2 and
+		pId IN 
+		(SELECT permission_id FROM role_permission WHERE 
+			 role_id IN
+			(SELECT rid FROM sys_role WHERE roleStatus=1 AND
+				rid IN
+				(SELECT role_id FROM user_role WHERE user_id=#{id})
+			)
+		)
+	</select>
+	<select id="getPermissionList" resultType="Permission">
+		select * from sys_permission
+		<where>
+			<if test="keyWord!=null and keyWord!=''">
+				pName like concat('%',#{keyWord},'%')
+				or initial like concat('%',#{keyWord},'%')
+			</if>
+		</where>
+		order by 
+		<choose>
+			<when test="orderingRule.prop!=null and orderingRule.prop!='' and orderingRule.order!=null and orderingRule.order!=''">
+				${orderingRule.prop}  ${orderingRule.order}
+			</when>
+			<otherwise >
+				sort asc
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insertPermission" useGeneratedKeys="true" keyColumn="pId" keyProperty="pId">
+		INSERT INTO sys_permission(`pId`,`pName`,`initial`,`pType`,`icon`,`url`,`resource`,`permissionStatus`,`sort`,`describe`,`isFixed`,`parentId`,`componentName`,`showMenu`)
+		VALUES(DEFAULT,#{pName},#{initial},#{pType},#{icon},#{url},#{resource},default,#{sort},#{describe},default,
+		<choose>
+			<when test="parentId==null and parentId==''">
+				default
+			</when>
+			<otherwise>#{parentId}</otherwise>
+		</choose>,#{componentName},#{showMenu}
+		)
+	</insert>
+	
+	<select id="getPermissionById" resultType="Permission">
+		select * from sys_permission where pId=#{pId}
+	</select>
+	<!-- 额外加了代码 -->
+	<update id="updatePermission">
+		update sys_permission
+		<set>
+			pName=#{pName},
+			initial=#{initial}
+			,pType=#{pType},
+			icon=#{icon},url=#{url},resource=#{resource},
+			permissionStatus=#{permissionStatus},
+			sort=#{sort},`describe`=#{describe},
+			
+			componentName=#{componentName},
+			showMenu=#{showMenu},
+			<if test="isFixed != null and isFixed!=''">isFixed=#{isFixed},</if>
+			<if test="parentId!=null and parentId!=''">parentId=#{parentId}</if>
+		</set>
+		where pId=#{pId}
+	</update>
+	<update id="updatePermissionStatus">
+		update sys_permission
+		set permissionStatus=#{newPermissionState}
+		where pId=#{pId}
+	</update>
+	<delete id="deletePermission">
+		delete from sys_permission where pId=#{pId}
+	</delete>
+	<delete id="delete_rolePermission">
+		delete from role_permission where permission_id=#{pId}
+	</delete>
+	<select id="getChildrenPermissionCountBypId" resultType="int">
+		select count(0) from sys_permission where parentId=#{pId}
+	</select>
+</mapper>

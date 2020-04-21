@@ -1,0 +1,34 @@
+#多eureka配置 集群
+server:
+  port: 7001
+
+spring:
+  application:
+    name: eureka-server-7001
+  #加入了安全验证 访问服务注册中心或者注册需要输入密码
+  security: 
+    user:
+      name: 123
+      password: 123
+eureka:
+  instance:
+    #在服务注册中心页面上显示注册到服务中心实例的服务  在status列下的名称
+    instanceId: ${eureka.instance.hostname}:${server.port}/${spring.application.name}
+    #是否显示ip地址(鼠标悬浮到注册实例的微服务上左下角显示的)默认不显示
+    preferIpAddress: true
+    #主机名称localhost==127.0.0.1 但是集群的话多个服务注册中心不能同时设置为localhost
+    hostname: cluster-eureka2 
+    #主机名称 在集群的模式下需要在C:\Windows\System32\drivers\etc 
+    #的host文件中加入 映射  cluster-eureka2
+  client:
+    #指示此实例是否应将其信息注册到eureka 供他人发现的服务器。
+    registerWithEureka: false 
+    #是否从Eureka Server中获取注册列表，默认为true
+    fetchRegistry: false 
+    serviceUrl:
+      #向7001端口的服务注册中心注册自己
+      defaultZone: http://123:123@cluster-eureka1:7001/eureka
+  server:
+    enableSelfPreservation: false #不关闭自我保护功能
+
+        

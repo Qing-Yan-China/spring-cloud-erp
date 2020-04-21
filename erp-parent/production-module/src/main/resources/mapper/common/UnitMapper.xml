@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.slq.mapper.common.UnitMapper">
+ 	
+ 	<resultMap type="Unit" id="unitResult" autoMapping="true">
+ 		<id column="id" property="id"/>
+ 		<collection property="units" ofType="java.lang.String" select="" column="id"></collection>
+ 	</resultMap>
+ 	
+ 	<select id="getUnitByTableColumn" resultMap="unitResult">
+ 		select * from unit_key where table_column=#{table_column}
+ 	</select>
+ 	<select id="getUnitById" resultType="java.lang.String">
+ 		select * from unit_value where parent_id=#{id}
+ 	</select>
+</mapper>

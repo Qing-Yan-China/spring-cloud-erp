@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.slq.mapper.RoleMapper">
+	<!-- 获取用户拥有的权限集合 -->
+	<select id="getUserOwnRole" resultType="java.lang.String">
+		select rName from sys_role
+		where roleStatus=1 and rId in
+		(select role_id from user_role where user_id=#{id})
+	</select>
+	<select id="getRoleList" resultType="Role">
+		select * from sys_role 
+		<where>
+			<if test="keyWord!=null and keyWord!=''">
+				rName like concat('%',#{keyWord},'%')
+				or initial like concat('%',#{keyWord},'%')
+			</if>
+		</where>
+		order by 
+		<choose>
+			
+			<when test="orderingRule.prop!=null and orderingRule.prop!='' and orderingRule.order!=null and orderingRule.order!=''">
+				${orderingRule.prop}  ${orderingRule.order}
+			</when>
+			<otherwise >
+				sort asc
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insertRole" useGeneratedKeys="true" keyColumn="rId" keyProperty="rid">
+		INSERT INTO sys_role(`rId`,`rName`,`roleStatus`,`describe`,`createtime`,`updatetime`,`initial`,`isFixed`,`sort`)
+		VALUES(DEFAULT,#{rname},DEFAULT,#{describe},#{createTime},NULL,#{initial},DEFAULT,#{sort})
+	</insert>
+	
+	<update id="updateRole">
+		UPDATE sys_role
+		<set>
+			rName=#{rname},
+			roleStatus=#{roleStatus},
+			`describe`=#{describe},
+			`updatetime`=#{updateTime},
+			`initial`=#{initial},
+			`sort`=#{sort}
+		</set>
+		where rId=#{rid}
+	</update>
+	<select id="getRoleById" resultType="Role">
+		select * from sys_role where rId=#{rid}
+	</select>
+	<select id="getOwnPermission" resultType="int">
+		select permission_id from role_permission
+		where role_id =#{rid}
+	</select>
+	
+	<!-- 删除这个角色所有的权限 -->
+	<!-- 重新设置这个角色对应的权限时候  先删除角色相对应的角色权限表 在新增-->
+	<delete id="delete_roleOwnPermission">
+		delete from role_permission
+		where role_id=#{rid}
+	</delete>
+	<insert id="set_roleOwnPermission">
+		insert into role_permission(role_id,permission_id)
+		values
+		<foreach collection="pids" separator="," item="pid">
+			(#{rid},#{pid})
+		</foreach>
+	</insert>
+	<!-- 删除角色时候  一同删除角色相对应的角色权限表 -->
+	<delete id="delete_RolePermission">
+		delete from role_permission where rId=#{rId}
+	</delete>
+	<delete id="deleteRole">
+		delete from sys_role where rId=#{rId}
+	</delete>
+	
+	<!-- 设置权限的状态 -->
+	<update id="setRoleState">
+		update sys_role set roleStatus=#{newStatus} where rid=#{rid}
+	</update>
+	
+	<select id="getUsableRoleChooser" resultType="Role">
+		select rid,rname,`describe` from sys_role
+		where roleStatus=1
+		order by sort asc
+	</select>
+</mapper>

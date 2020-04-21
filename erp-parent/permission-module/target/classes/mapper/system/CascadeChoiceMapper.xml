@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 所有格式化为级联选择器中数据的获取文件 -->
+<mapper namespace="com.slq.mapper.CascadeChoiceMapper">
+	
+	<sql id="permission_up_state">
+		permissionStatus=1
+	</sql>
+	<!-- permission -->
+	<resultMap type="com.slq.common.CascadeChoice"  id="permissionResult">
+		<id column="pId" property="value"/>
+		<result column="pName" property="title"/>
+		<result column="pType" property="type"/>
+		<collection  property="children" ofType="com.slq.common.CascadeChoice" select="getCascadePermissionChild" column="pId">
+			<id column="pId" property="value"/>
+			<result column="pName" property="title"/>
+			<result column="pType" property="type"/>
+		</collection>
+	</resultMap>
+	
+	<select id="getCascadePermission" resultMap="permissionResult">
+		select pId,pName,pType from sys_permission 
+		where parentId is null or parentId ='null' and <include refid="permission_up_state"/>
+		order by sort asc
+	</select>
+	<select id="getCascadePermissionChild" resultMap="permissionResult">
+		select pId,pName,pType from sys_permission 
+		where parentId = #{parentId} and <include refid="permission_up_state"/>
+		order by sort asc
+	</select>
+</mapper>
