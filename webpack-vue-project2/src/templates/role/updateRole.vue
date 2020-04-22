@@ -32,9 +32,10 @@
 <script>
 	export default{
 		name:'updateRole',
-		props:['rid'],
+		//props:['rid'],
 		data(){
 			return{
+				rid:null,
 				role:{},
 				update_role_dialog_visible:false,
 				rules:{
@@ -78,6 +79,7 @@
 					})
 			}
 		},created(){
+			this.rid=this.$route.params[Object.keys(this.$route.params)[0]];
 			this.getRoleById();
 			this.update_role_dialog_visible=true;
 		}

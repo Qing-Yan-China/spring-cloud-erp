@@ -43,6 +43,7 @@
 								children: response
 							}])
 						})
+					this.$router.addRoutes(this.$error_router);
 				}
 			},delSessionStorage(){
 				this.$common.removeSessionStorage(this.vuex_storage_name);

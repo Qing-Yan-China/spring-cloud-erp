@@ -106,13 +106,18 @@ const permission = {
 				routers.push(router)
 			}
 			if (data.children && data.children.length > 0) {
+				let fals = false; 
 				data.children.forEach((treeMenu) => {
+					if(treeMenu.showMenu){
+						fals=true
+					}
 					this.commit({
 						type: 'setRouter',
 						data: treeMenu,
 						routers: router ? router.children : routers
 					});
 				})
+				data.showMenu=fals;
 			}
 		}
 	},

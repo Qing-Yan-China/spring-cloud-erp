@@ -1,16 +1,16 @@
 <template>
 	<!--这个表示有子菜单的情况下，才会显示-->
-	<el-submenu :index="tree_menu.id+''" v-if="tree_menu.children && tree_menu.children.length>0">
+	<el-submenu :index="tree_menu.id+''" v-if="tree_menu.children && tree_menu.children.length>0 ">
 	  <template slot="title">
 	    <i  :class="tree_menu.icon"></i>
 	    <span slot="title">{{tree_menu.title}}</span>
 	  </template>
 	  <template v-for="(routeurl,key,index) in tree_menu.children">
 	  <!-- **注意**这个表示判断子菜单下面是否还有三级和四级菜单 -->
-	    <sub_menu :tree_menu="routeurl" :key="index" v-if="routeurl.children && routeurl.children.length>0"></sub_menu>
+	    <sub_menu :tree_menu="routeurl" :key="index" v-if="routeurl.children && routeurl.children.length>0 && routeurl.showMenu"></sub_menu>
 	    <el-menu-item v-else  :index="'/index/'+routeurl.url" :key="index">
 	      <i  :class="routeurl.icon"></i>
-	      <span slot="title">{{routeurl.title}}----------</span>
+	      <span slot="title">{{routeurl.title}}</span>
 	    </el-menu-item>
 	  </template>
 	</el-submenu>

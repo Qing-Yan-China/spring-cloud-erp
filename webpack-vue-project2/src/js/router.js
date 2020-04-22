@@ -85,55 +85,6 @@ const router = new VueRouter({
 			children: [{
 					path: 'updatePwd',
 					component: () => import('@/components/updatePwd.vue'),
-				}, {
-					path: 'personalcenter.html',
-					component: () => import('@/templates/system/personalcenter.vue'),
-					children: [{
-						path: 'updatePwd',
-						component: () => import('@/components/updatePwd.vue')
-					}]
-				},
-				{
-					path: 'user.html',
-					component: user,
-					children: [{
-						path: 'insert',
-						component: insertUser
-					},{
-						path:'update/:uid',
-						component:()=>import('@/templates/user/update_user.vue'),
-						props:true
-					}
-					]
-				},
-				{
-					path: 'permission.html',
-					component: permission,
-					children: [{
-							path: 'insert',
-							component: insertPermission
-						},
-						//props:(route)=>({pId:route.query.pId})
-						{
-							path: 'update/:pId',
-							component: updatePermission,
-							props: true
-						}
-					]
-				},
-				{
-					path: 'role.html',
-					component: role,
-					children: [{
-							path: 'insert',
-							component: insertRole
-						},
-						{
-							path: 'update/:rid',
-							component: updateRole,
-							props: true
-						}
-					]
 				}
 			]
 		},

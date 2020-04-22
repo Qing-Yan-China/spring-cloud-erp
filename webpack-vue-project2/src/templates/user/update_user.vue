@@ -38,7 +38,7 @@
 <script>
 	export default {
 		name:'updateUser',
-		props:['uid'],
+		//props:['uid'],
 		data() {
 			var validatorCheckuid = (role, value, callback) => {
 				if (value === '') {
@@ -59,6 +59,7 @@
 				}
 			};
 			return {
+				uid:null,
 				formLabelWidth: '120px',
 				update_user_dialog_visible: false,
 				user: {},
@@ -77,6 +78,7 @@
 			}
 		},
 		created() {
+			this.uid=this.$route.params[Object.getkeys(this.$route.params)[0]]
 			this.update_user_dialog_visible = true;
 			this.getUser();
 		},

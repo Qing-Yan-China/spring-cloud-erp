@@ -11,7 +11,7 @@ import 'element-ui/lib/theme-chalk/index.css'
 //
 /*引入自定义的路由和vuex的js对象*/
 import store from '@/js/vuex/store.js'
-import router from '@/js/router.js'
+import router,{error_router} from '@/js/router.js'
 //
 /*
 公共的js
@@ -26,6 +26,7 @@ Vue.prototype.$axios=axios
 Vue.prototype.$fetch=fetch
 Vue.prototype.$post=post
 Vue.prototype.$common=common
+Vue.prototype.$error_router=error_router
 Vue.use(elementUI)
 Vue.use(Vuex)
 Vue.use(VueRouter)

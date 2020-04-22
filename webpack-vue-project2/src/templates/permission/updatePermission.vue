@@ -75,6 +75,7 @@
 		name:'updatePermission',
 		data(){
 			return{
+				pId:null,//因为使用动态路由不好使用在路由中就获取到props中的参数
 				//checkStrictly是否严格的遵守父子节点不互相关联
 				//expandTrigger次级菜单的展开方式
 				propsParams:{
@@ -158,10 +159,14 @@
 				}
 			}
 		},created() {
+			//因为是动态加载 所以没办法
+			this.pId=this.$route.params[Object.keys(this.$route.params)[0]];
 			this.init();
-		},props:[
-			'pId'
-		],components:{
+		}
+		// ,props:[
+		// 	'pId'
+		// ]
+		,components:{
 			select_icon
 		}
 	}
